@@ -63,4 +63,27 @@
   &:hover {
     background: $blue-dark;
   }
+
+  &:disabled {
+    background-color: $white;
+    color: $text;
+    cursor: not-allowed;
+    border-bottom: 4px solid $green;
+  }
+}
+
+.CountdownButtonIsActive {
+  background-color: $white;
+  color: $title;
+
+  &:hover {
+    background: $red;
+    color: $white;
+  }
+}
+
+.buttonIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-left: 0.6rem;
 }

@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import styles from '../styles/components/Countdown.module.scss';
 
+let countdownTimeout: NodeJS.Timeout;
+
 const Countdown = () => {
-  const [ time, setTime ] = useState(25 * 60);
-  const [ active, setActive ] = useState(false);
+  const [ time, setTime ] = useState(0.1 * 60);
+  const [ isActive, setIsActive ] = useState(false);
+  const [ hasFinished, setHasFinished ] = useState(false);
 
   const minutes = Math.floor(time / 60);
   const seconds = time % 60;
@@ -12,16 +15,25 @@ const Countdown = () => {
   const [secondLeft, secondRight] = String(seconds).padStart(2, '0').split('');
 
   function startCountdown() {
-    setActive(!active);
+    setIsActive(true);
+  }
+
+  function resetCountdown() {
+    clearTimeout(countdownTimeout);
+    setIsActive(false);
+    setTime(0.1 * 60);
   }
 
   useEffect(() => {
-    if (active && time > 0) {
-      setTimeout(() => {
+    if (isActive && time > 0) {
+      countdownTimeout = setTimeout(() => {
         setTime(time - 1);
       }, 1000);
+    } else if (isActive && time === 0) {
+      setHasFinished(true);
+      setIsActive(false);
     }
-  }, [active, time]);
+  }, [isActive, time]);
 
   return(
     <div>
@@ -37,13 +49,35 @@ const Countdown = () => {
         </div>
       </div>
 
-      <button 
-        type="button"
-        onClick={startCountdown}
-        className={styles.CountdownButton}
-      >
-        Iniciar um ciclo
-      </button>
+      {hasFinished ? (
+        <button 
+          disabled
+          className={styles.CountdownButton}
+        >
+          Ciclo encerrado <img className={styles.buttonIcon} src="icons/check_circle.svg" alt="ok" />
+        </button>
+      ) : (
+        <>
+          { isActive ? (
+            <button 
+              type="button"
+              onClick={resetCountdown}
+              className={`${styles.CountdownButton} ${styles.CountdownButtonIsActive}`}
+            >
+              Abandonar ciclo <img className={styles.buttonIcon} src="icons/left_icon.svg" alt="X" />
+            </button>
+          ) : (
+            <button 
+              type="button"
+              onClick={startCountdown}
+              className={styles.CountdownButton}
+            >
+              Iniciar um ciclo <img className={styles.buttonIcon} src="icons/play_arrow.svg" alt="ok" />
+            </button>
+          ) }
+        </>
+      )}
+      
     </div>
   );
 }
